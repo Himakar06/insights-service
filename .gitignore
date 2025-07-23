@@ -1,0 +1,19 @@
+# Virtual environments
+venv/
+.venv/
+ENV/
+env/
+
+# Bytecode
+__pycache__/
+*.py[cod]
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment variables
+.env
+
+# IDE folders
+.vscode/
+.idea/
