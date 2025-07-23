@@ -9,6 +9,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 # Import custom handlers
 from src.ingestion.file_handler import read_csv, is_valid_csv, is_file_size_valid, validate_dataframe
 from src.analysis.summary import generate_summary
+from src.analysis.autoeda import generate_eda_report
+
 
 # Streamlit page config
 st.set_page_config(page_title='CSV Upload & Validation', layout='centered')
@@ -68,6 +70,25 @@ if uploaded_file is not None:
                 st.subheader("📈 Summary After Cleaning")
                 summary_df = generate_summary(df_cleaned)
                 st.dataframe(summary_df)
+                
+                st.subheader("📊 Generate AutoEDA Report with Sweetviz")
+                if st.button("Run AutoEDA"):
+                    with st.spinner("Generating EDA report..."):
+                        output_path = generate_eda_report(df)
+
+                        if os.path.exists(output_path):
+                            st.success("✅ Report generated successfully!")
+
+                            with open(output_path, "rb") as f:
+                                st.download_button(
+                                    label="📥 Download EDA Report",
+                                    data=f,
+                                    file_name="sweetviz_report.html",
+                                    mime="text/html"
+                                )
+                        else:
+                            st.error("❌ Failed to generate EDA report.")
+
 
 else:
     st.info("📥 Please upload a CSV file to get started.")
