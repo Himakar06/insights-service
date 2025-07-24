@@ -10,7 +10,16 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 from src.ingestion.file_handler import read_csv, is_valid_csv, is_file_size_valid, validate_dataframe
 from src.analysis.summary import generate_summary
 from src.analysis.autoeda import generate_eda_report
-
+from src.visualization.basic_charts import (
+    plot_histogram,
+    plot_box,
+    plot_bar,
+    plot_pie,
+    plot_count,
+    plot_scatter,
+    plot_line,
+    plot_correlation_matrix
+)
 
 # Streamlit page config
 st.set_page_config(page_title='CSV Upload & Validation', layout='centered')
@@ -89,6 +98,38 @@ if uploaded_file is not None:
                         else:
                             st.error("❌ Failed to generate EDA report.")
 
+                st.subheader("📊 Custom Column-wise Visualizations")
+
+                columns = ['None'] + df.columns.tolist()
+                chart_types = ['None','Bar','Line','Pie','Box','Histogram','Count','Scatter']
+
+                col1 , col2 = st.columns(2)
+                selected_column = col1.selectbox("Choose a column",columns)
+                selected_chart = col2.selectbox("Choose a chart",chart_types)
+
+                if selected_column != 'None' and selected_chart != 'None':
+                    if selected_column in df.columns:
+                        try:
+                            if selected_chart == 'Bar':
+                                plot_bar(df, selected_column)
+                            elif selected_chart == 'Pie':
+                                plot_pie(df, selected_column)
+                            elif selected_chart == 'Box':
+                                plot_box(df, selected_column)
+                            elif selected_chart == 'Count':
+                                plot_count(df, selected_column)
+                            elif selected_chart == 'Histogram':
+                                plot_hist(df, selected_column)
+                            elif selected_chart == 'Line':
+                                plot_line(df, selected_column)
+                            elif selected_chart == 'Scatter':
+                                plot_scatter(df, selected_column)
+                        except Exception as e:
+                            st.error(f"❌ Failed to generate {selected_chart} for '{selected_column}': {e}")
+                    else:
+                        st.warning(f"⚠️ Column '{selected_column}' not found in dataset.")
+                else:
+                    st.info("Select both a column and a chart type to display the visualization.")
 
 else:
     st.info("📥 Please upload a CSV file to get started.")
