@@ -36,6 +36,9 @@ if uploaded_file is not None:
         st.session_state.chart_blocks = [0]
         st.session_state.next_block_id = 1
 
+    if "chart_config" not in st.session_state:
+        st.session_state.chart_config = {}
+
     file_details = {
         "File name": uploaded_file.name,
         "File type": uploaded_file.type,
@@ -96,7 +99,7 @@ if uploaded_file is not None:
                         else:
                             st.error("❌ Failed to generate EDA report.")
 
-                def render_chart_block(block_id, exportable_charts):
+                def render_chart_block(block_id):
                     col1, col2, col3 = st.columns([4, 4, 1])
                     column_options = ['None'] + df.columns.tolist()
                     chart_options = ['None', 'Bar', 'Line', 'Pie', 'Box', 'Histogram', 'Count', 'Scatter']
@@ -106,9 +109,11 @@ if uploaded_file is not None:
 
                     if col3.button("❌", key=f"remove_{block_id}"):
                         st.session_state.chart_blocks.remove(block_id)
+                        st.session_state.chart_config.pop(block_id, None)
                         st.experimental_rerun()
 
                     if selected_column != "None" and selected_chart != "None":
+                        st.session_state.chart_config[block_id] = (selected_chart, selected_column)
                         st.markdown(f"### 📊 {selected_chart} of `{selected_column}`")
                         try:
                             fig, ax = plt.subplots(figsize=(8, 4))
@@ -134,8 +139,7 @@ if uploaded_file is not None:
                             plt.savefig(image_path)
                             plt.close(fig)
 
-                            exportable_charts.append((image_path, f"{selected_chart} of {selected_column}"))
-
+                            st.session_state.chart_config[block_id] += (image_path,)
                             st.image(image_path)
 
                         except Exception as e:
@@ -143,9 +147,8 @@ if uploaded_file is not None:
 
                 st.markdown("Build your own chart panel by selecting columns and chart types. Click ➕ to add more.")
 
-                exportable_charts = []
                 for block_id in st.session_state.chart_blocks:
-                    render_chart_block(block_id, exportable_charts)
+                    render_chart_block(block_id)
                     st.markdown("---")
 
                 if st.button("➕ Add Another Chart"):
@@ -180,9 +183,10 @@ if uploaded_file is not None:
                         plt.close()
                         pdf.add_image(corr_img_path, title="Correlation Matrix")
 
-                        if exportable_charts:
-                            for image_path, chart_title in exportable_charts:
-                                pdf.add_image(image_path, title=chart_title)
+                        for block_id in st.session_state.chart_blocks:
+                            if block_id in st.session_state.chart_config:
+                                chart_type, column, image_path = st.session_state.chart_config[block_id]
+                                pdf.add_image(image_path, title=f"{chart_type} of {column}")
 
                         output_path = "dashboard_summary.pdf"
                         pdf.output(output_path)
@@ -195,10 +199,12 @@ if uploaded_file is not None:
                                 mime="application/pdf"
                             )
 
-                        paths_to_cleanup = [corr_img_path] + [img for img, _ in exportable_charts]
+                        paths_to_cleanup = [corr_img_path] + [cfg[2] for cfg in st.session_state.chart_config.values() if len(cfg) == 3]
                         for path in paths_to_cleanup:
                             if os.path.exists(path):
                                 os.remove(path)
+
+                        st.session_state.chart_config.clear()
 
                     except Exception as e:
                         st.error(f"❌ Failed to generate PDF: {e}")
