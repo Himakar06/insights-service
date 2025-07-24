@@ -98,38 +98,82 @@ if uploaded_file is not None:
                         else:
                             st.error("❌ Failed to generate EDA report.")
 
-                st.subheader("📊 Custom Column-wise Visualizations")
-
-                columns = ['None'] + df.columns.tolist()
-                chart_types = ['None','Bar','Line','Pie','Box','Histogram','Count','Scatter']
-
-                col1 , col2 = st.columns(2)
-                selected_column = col1.selectbox("Choose a column",columns)
-                selected_chart = col2.selectbox("Choose a chart",chart_types)
-
-                if selected_column != 'None' and selected_chart != 'None':
-                    if selected_column in df.columns:
+                #In case of using datetime
+                numerical_cols = df_cleaned.select_dtypes(include=['number']).columns.tolist()
+                categorical_cols = df_cleaned.select_dtypes(include=['object','category']).columns.tolist()
+                datetime_cols = df_cleaned.select_dtypes(include=['datetime64[ns]','datetime']).columns.tolist()
+                for col in df_cleaned.columns:
+                    if df_cleaned[col].dtype == 'object':
                         try:
-                            if selected_chart == 'Bar':
-                                plot_bar(df, selected_column)
-                            elif selected_chart == 'Pie':
-                                plot_pie(df, selected_column)
-                            elif selected_chart == 'Box':
-                                plot_box(df, selected_column)
-                            elif selected_chart == 'Count':
-                                plot_count(df, selected_column)
-                            elif selected_chart == 'Histogram':
-                                plot_hist(df, selected_column)
-                            elif selected_chart == 'Line':
-                                plot_line(df, selected_column)
-                            elif selected_chart == 'Scatter':
-                                plot_scatter(df, selected_column)
+                            df_cleaned[col] = pd.to_datetime(df_cleaned[col])
+                            datetime_cols.append(col)
+                            if col in categorical_cols:
+                                categorical_cols.remove(col)
+                        except:
+                            pass
+
+                with st.container():
+                    st.markdown("## 📈 Visual Insights")
+
+                    with st.expander("🎛️ Generate Chart"):
+                        # Initialize chart_blocks list instead of a counter
+                        if "chart_blocks" not in st.session_state:
+                            st.session_state.chart_blocks = [1]  # Start with block ID 1
+                        if "next_block_id" not in st.session_state:
+                            st.session_state.next_block_id = 2  # To keep track of unique keys
+
+                        def render_chart_block(block_id):
+                            col1, col2, col3 = st.columns([4, 4, 1])
+                            column_options = ['None'] + df.columns.tolist()
+                            chart_options = ['None', 'Bar', 'Line', 'Pie', 'Box', 'Histogram', 'Count', 'Scatter']
+
+                            selected_column = col1.selectbox(f"🔸 Select Column #{block_id}", column_options, key=f"col_{block_id}")
+                            selected_chart = col2.selectbox(f"🔹 Select Chart Type #{block_id}", chart_options, key=f"chart_{block_id}")
+        
+                            # ❌ Remove button
+                            if col3.button("❌", key=f"remove_{block_id}"):
+                                st.session_state.chart_blocks.remove(block_id)
+                                st.experimental_rerun()
+
+                            if selected_column != "None" and selected_chart != "None":
+                                st.markdown(f"### 📊 {selected_chart} of `{selected_column}`")
+                                try:
+                                    if selected_chart == 'Bar':
+                                        plot_bar(df, selected_column)
+                                    elif selected_chart == 'Pie':
+                                        plot_pie(df, selected_column)
+                                    elif selected_chart == 'Box':
+                                        plot_box(df, selected_column)
+                                    elif selected_chart == 'Count':
+                                        plot_count(df, selected_column)
+                                    elif selected_chart == 'Histogram':
+                                        plot_histogram(df, selected_column)
+                                    elif selected_chart == 'Line':
+                                        plot_line(df, selected_column)
+                                    elif selected_chart == 'Scatter':
+                                        plot_scatter(df, selected_column)
+                                except Exception as e:
+                                    st.error(f"❌ Failed to render {selected_chart} for {selected_column}: {e}")
+
+                        st.markdown("Build your own chart panel by selecting columns and chart types. Click ➕ to add more.")
+    
+                        # Render all chart blocks
+                        for block_id in st.session_state.chart_blocks:
+                            render_chart_block(block_id)
+                            st.markdown("---")
+
+                        # ➕ Add new chart block
+                        if st.button("➕ Add Another Chart"):
+                            st.session_state.chart_blocks.append(st.session_state.next_block_id)
+                            st.session_state.next_block_id += 1
+                            st.experimental_rerun()
+
+                        st.markdown('---')
+                        try:
+                            plot_correlation_matrix(df)
                         except Exception as e:
-                            st.error(f"❌ Failed to generate {selected_chart} for '{selected_column}': {e}")
-                    else:
-                        st.warning(f"⚠️ Column '{selected_column}' not found in dataset.")
-                else:
-                    st.info("Select both a column and a chart type to display the visualization.")
+                            st.error(f"❌ Failed to generate correlation matrix: {e}")
+
 
 else:
     st.info("📥 Please upload a CSV file to get started.")

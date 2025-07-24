@@ -73,7 +73,7 @@ def validate_dataframe(df):
         issues['missing_values'] = "The file contains missing values."
 
     num_cols = df.select_dtypes(include=['number']).shape[1]
-    obj_cols = df.select_dtypes(include=['object']).shape[1]
+    obj_cols = df.select_dtypes(include=['object','category']).shape[1]
 
     if num_cols == 0:
         issues['numeric_columns'] = "No numeric columns detected."
