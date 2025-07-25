@@ -110,7 +110,7 @@ if uploaded_file is not None:
                     if col3.button("❌", key=f"remove_{block_id}"):
                         st.session_state.chart_blocks.remove(block_id)
                         st.session_state.chart_config.pop(block_id, None)
-                        st.experimental_rerun()
+                        st.rerun()
 
                     if selected_column != "None" and selected_chart != "None":
                         st.session_state.chart_config[block_id] = (selected_chart, selected_column)
@@ -154,7 +154,7 @@ if uploaded_file is not None:
                 if st.button("➕ Add Another Chart"):
                     st.session_state.chart_blocks.append(st.session_state.next_block_id)
                     st.session_state.next_block_id += 1
-                    st.experimental_rerun()
+                    st.rerun()
 
                 st.markdown('---')
                 try:
