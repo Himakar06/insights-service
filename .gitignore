@@ -17,3 +17,6 @@ __pycache__/
 # IDE folders
 .vscode/
 .idea/
+# Ignore all auto-generated charts
+temp_chart_*.png
+*.pdf

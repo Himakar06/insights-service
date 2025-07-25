@@ -26,6 +26,7 @@ from src.export.pdf_exporter import PDFReport
 
 # Streamlit page config
 st.set_page_config(page_title='CSV Upload & Validation', layout='centered')
+
 st.title("📁 Upload and Validate Your CSV File")
 
 # File uploader
