@@ -1,22 +1,21 @@
 # Core Dependencies
 streamlit==1.47.0
-pandas==2.3.1
-numpy==1.26.4
-matplotlib==3.10.0
+pandas==2.2.2
+numpy==1.24.4
+matplotlib==3.7.5
 seaborn==0.13.2
-plotly==6.2.0
+plotly==5.20.0
 
 # File handling and export
 fpdf2==2.8.3
-Pillow==11.3.0
+Pillow==10.2.0
 
 # Data Analysis / EDA
-
-ydata-profiling==4.16.1 
+ydata-profiling==4.16.1
 
 # Utilities
 validators==0.35.0
-scipy==1.15.3
+scipy==1.11.4
 
-# Optional if using Git repo management
+# Git Support (optional)
 GitPython==3.1.45
