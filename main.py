@@ -9,10 +9,10 @@ import seaborn as sns
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 # Import custom handlers
-from src.ingestion.file_handler import read_csv, is_valid_csv, is_file_size_valid, validate_dataframe
-from src.analysis.summary import generate_summary
-from src.analysis.autoeda import generate_eda_report
-from src.visualization.basic_charts import (
+from ingestion.file_handler import read_csv, is_valid_csv, is_file_size_valid, validate_dataframe
+from analysis.summary import generate_summary
+from analysis.autoeda import generate_eda_report
+from visualization.basic_charts import (
     plot_histogram,
     plot_box,
     plot_bar,
@@ -22,7 +22,7 @@ from src.visualization.basic_charts import (
     plot_line,
     plot_correlation_matrix
 )
-from src.export.pdf_exporter import PDFReport
+from export.pdf_exporter import PDFReport
 
 # Streamlit page config
 st.set_page_config(page_title='CSV Upload & Validation', layout='centered')

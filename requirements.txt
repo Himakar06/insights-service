@@ -1,24 +1,22 @@
-# --- Core ---
-pandas==2.3.1
-numpy==2.3.2
-python-dateutil==2.9.0.post0
-pytz==2025.2
-setuptools==80.9.0
-
-# --- Streamlit App ---
+# Core Dependencies
 streamlit==1.47.0
-plotly==6.2.0
-matplotlib==3.10.3
+pandas==2.3.1
+numpy==1.24.4  
+matplotlib==3.10.0
 seaborn==0.13.2
+plotly==6.2.0
+
+# File handling and export
 fpdf2==2.8.3
+Pillow==11.3.0
 
-# --- EDA ---
-sweetviz==2.3.1
+# Data Analysis / EDA
 
-# --- Utility ---
-requests==2.32.4
+ydata-profiling==4.16.1 
+
+# Utilities
 validators==0.35.0
-watchdog==6.0.0
+scipy==1.15.3
 
-# --- Optional/Used by dependencies ---
-typing_extensions==4.14.1
+# Optional if using Git repo management
+GitPython==3.1.45
