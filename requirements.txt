@@ -1,26 +1,24 @@
-# Core framework
-streamlit==1.47.0
-
-# Data handling
+# --- Core ---
 pandas==2.3.1
 numpy==2.3.2
-
-# Data visualization
-matplotlib==3.10.3
-seaborn==0.13.2
-plotly==6.2.0
-sweetviz==2.3.1
-
-# PDF export
-fpdf2==2.8.3
-
-# ML tools (for future model support or scikit summary)
-scikit-learn==1.7.1
-
-# Misc
 python-dateutil==2.9.0.post0
 pytz==2025.2
+setuptools==80.9.0
 
-# Web utilities
+# --- Streamlit App ---
+streamlit==1.47.0
+plotly==6.2.0
+matplotlib==3.10.3
+seaborn==0.13.2
+fpdf2==2.8.3
+
+# --- EDA ---
+sweetviz==2.3.1
+
+# --- Utility ---
 requests==2.32.4
 validators==0.35.0
+watchdog==6.0.0
+
+# --- Optional/Used by dependencies ---
+typing_extensions==4.14.1

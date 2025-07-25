@@ -1,4 +1,5 @@
 import sweetviz as sv
+import pkg_resources
 
 def generate_eda_report(df, output_path="sweetviz_report.html"):
     report = sv.analyze(df)
