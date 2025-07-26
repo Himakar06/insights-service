@@ -94,7 +94,7 @@ if uploaded_file is not None:
                                 st.download_button(
                                     label="📥 Download EDA Report",
                                     data=f,
-                                    file_name="sweetviz_report.html",
+                                    file_name="EDA_Report.html",
                                     mime="text/html"
                                 )
                         else:
