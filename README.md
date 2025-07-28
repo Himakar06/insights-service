@@ -28,7 +28,7 @@ This tool solves that by providing:
 | Feature | Description |
 |--------|-------------|
 | 📁 **Upload CSV** | Upload any CSV to begin |
-| 📊 **Automated EDA** | Generate profiling reports using Sweetviz |
+| 📊 **Automated EDA** | Generate profiling reports |
 | 📈 **Smart Visualizations** | Generate bar, pie, line, and correlation charts |
 | 📄 **Export Dashboard** | Save your insights and visuals as a PDF |
 | 💬 **Ask Your Data (Coming Soon)** | Chatbot interface powered by an LLM for querying your dataset |
