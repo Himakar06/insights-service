@@ -35,11 +35,10 @@ This tool solves that by providing:
 
 ---
 
-## 📸 Demo Screenshots
+# 📊 CSV Insights Dashboard
 
-| Dashboard Example | PDF Export |
-|-------------------|------------|
-| ![Dashboard](src/assets/dashboard_example.png) | ![PDF](src/assets/pdf_report.png) |
+![Dashboard Screenshot](images/dashboard_example.png)
+
 
 
 
@@ -49,9 +48,9 @@ This tool solves that by providing:
 
 - **Frontend/UI**: [Streamlit](https://streamlit.io)
 - **Data Analysis**: Pandas, NumPy
-- **Auto EDA**: Sweetviz
+- **Auto EDA**: YDataProfiling
 - **Visualizations**: Seaborn, Plotly, Matplotlib
-- **PDF Export**: FPDF, WeasyPrint
+- **PDF Export**: FPDF
 - **(Optional)**: OpenAI / HuggingFace Transformers for LLM Chat
 
 ---
