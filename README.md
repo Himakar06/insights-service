@@ -37,11 +37,10 @@ This tool solves that by providing:
 
 # 📊 CSV Insights Dashboard
 
-![Dashboard Screenshot](images/dashboard.png)
-![Preview Screenshot](images/preview.png)
-![Pdf Screenshot](images/pdf.png)
-![Dashboard Summary_Pdf](images/dashboard_summary.pdf)
-![EDA_Report](images/eda_report.html)
+<img src="images/dashboard.png" alt="Dashboard Screenshot" width="600"/>
+<img src="images/preview.png" alt="Dashboard Screenshot" width="600"/>
+<img src="images/pdf.png" alt="Dashboard Screenshot" width="600"/>
+
 
 ---
 
