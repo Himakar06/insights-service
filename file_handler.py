@@ -1,6 +1,6 @@
 import pandas as pd
 
-def is_valid_csv(file) -> tuple[bool, str, pd.DataFrame | None]:
+def is_valid_csv(file) -> (bool, str, pd.DataFrame | None):
     try:
     
         df = pd.read_csv(file, encoding="utf-8", low_memory=False)

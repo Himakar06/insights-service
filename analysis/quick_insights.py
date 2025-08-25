@@ -6,7 +6,7 @@ import seaborn as sns
 import plotly.express as px
 import streamlit as st
 
-def manual_eda(df: pd.DataFrame):
+def quick_insights(df: pd.DataFrame):
     st.header("🔎 Manual EDA Explorer")
 
     eda_options = st.multiselect(
