@@ -18,7 +18,7 @@ def quick_insights(df: pd.DataFrame):
     if st.button("Show Results"):
         if "Shape of Dataset" in eda_options:
             st.write("### 🔹 Shape")
-            st.dataframe(df.head())
+            st.write(df.shape)
 
         if "Sample Data" in eda_options:
             st.write("### 🔹 Sample Data()")

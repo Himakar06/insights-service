@@ -5,6 +5,7 @@ import time
 from file_handler import is_valid_csv
 from analysis.quick_insights import quick_insights
 from analysis.auto_eda import generate_eda
+from visualization import visualize_columns
 
 st.set_page_config(page_title="Insights Service", layout="centered")
 
@@ -20,6 +21,8 @@ if "df"  not in st.session_state:
 
 if "show_preview" not in st.session_state:
     st.session_state.show_preview = False
+
+
 
 # --- File uploader ---
 uploaded_file = st.file_uploader(
@@ -65,11 +68,11 @@ if st.session_state.df is not None:
             st.dataframe(st.session_state.df.head())
     
 
-    #Quick insights
+        #Quick insights
         st.title("📊 Quick Insights")
         quick_insights(st.session_state.df)
 
-    #Auto EDA
+        #Auto EDA
         st.subheader("🔎 Auto Generate EDA")    
         st.write(  "This feature uses **ydata_profiling** to create a complete exploratory data analysis (EDA) report.")
 
@@ -88,6 +91,10 @@ if st.session_state.df is not None:
                 st.download_button(
                     label = "Download EDA Report",
                     data=f,
-                    file_name = "eda_report.hmtl",
+                    file_name = "eda_report.html",
                     mime="text/html"
                 )
+
+        #Columns Visualization
+        st.subheader("📊 Column Visualizations")
+        visualize_columns(st.session_state.df)
