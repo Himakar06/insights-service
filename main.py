@@ -6,6 +6,7 @@ from file_handler import is_valid_csv
 from analysis.quick_insights import quick_insights
 from analysis.auto_eda import generate_eda
 from visualization import visualize_columns
+from data_quality_score import calculate_score,display_quality_score
 
 st.set_page_config(page_title="Insights Service", layout="centered")
 
@@ -21,6 +22,12 @@ if "df"  not in st.session_state:
 
 if "show_preview" not in st.session_state:
     st.session_state.show_preview = False
+
+if "quality_score" not in st.session_state:
+    st.session_state.quality_score = None
+
+if "quality_factors" not in st.session_state:
+    st.session_state.quality_factors = None
 
 
 
@@ -52,6 +59,8 @@ if uploaded_file is not None and uploaded_file != st.session_state.uploaded_file
     if status and df is not None:
         st.session_state.df = df
         st.session_state.show_preview = True
+        st.session_state.quality_score = None 
+        st.session_state.quality_factors = None
         
     else:
         st.session_state.df = None
@@ -59,42 +68,58 @@ if uploaded_file is not None and uploaded_file != st.session_state.uploaded_file
         st.error(f"❌ {message}")
 
 if st.session_state.df is not None:
-
+    
+    col1, col2 = st.columns([3, 1])
+    
+    with col1:
         st.info(f"**Filename:** {st.session_state.uploaded_file.name}")
         st.write("**Shape:**", st.session_state.df.shape)
+    
+    with col2:
+        if st.button("🧮 Data Quality Score", use_container_width=True, 
+                    help="Calculate data quality assessment"):
+            with st.spinner("Analyzing data quality..."):
+                score, factors = calculate_score(st.session_state.df)
+                st.session_state.quality_score = score
+                st.session_state.quality_factors = factors
+            st.rerun()
 
-        if st.session_state.show_preview:
-            st.write("**Data Preview**")
-            st.dataframe(st.session_state.df.head())
+    #Display Quality score    
+    if st.session_state.quality_score is not None:
+        display_quality_score(st.session_state.quality_score, st.session_state.quality_factors)
+        st.markdown("---")
+
+
+    if st.session_state.show_preview:
+        st.write("**Data Preview**")
+        st.dataframe(st.session_state.df.head())
     
 
-        #Quick insights
-        st.title("📊 Quick Insights")
-        quick_insights(st.session_state.df)
+    #Quick insights
+    st.title("📊 Quick Insights")
+    quick_insights(st.session_state.df)
 
-        #Auto EDA
-        st.subheader("🔎 Auto Generate EDA")    
-        st.write(  "This feature uses **ydata_profiling** to create a complete exploratory data analysis (EDA) report.")
+    #Auto EDA
+    st.subheader("🔎 Auto Generate EDA")    
+    st.write(  "This feature uses **ydata_profiling** to create a complete exploratory data analysis (EDA) report.")
 
-        if st.button("Generate Auto EDA"):
-            with st.spinner("Generating EDA Report... Please wait ⏳"):
-                report_path = "eda_report.html"
-                generate_eda(st.session_state.df, report_path)
+    if st.button("Generate Auto EDA"):
+        with st.spinner("Generating EDA Report... Please wait ⏳"):
+            report_path = "eda_report.html"
+            generate_eda(st.session_state.df, report_path)
 
-            st.toast("✅ Auto EDA Report Generated!")
+        st.toast("✅ Auto EDA Report Generated!")
 
-            with open(report_path, "r", encoding= "utf-8") as f:
-                html_content = f.read()
-                st.components.v1.html(html_content, height=800,  scrolling = True)
+        with open(report_path, "r", encoding= "utf-8") as f:
+            html_content = f.read()
+            st.components.v1.html(html_content, height=800,  scrolling = True)
 
-            with open(report_path, "rb") as f:
-                st.download_button(
-                    label = "Download EDA Report",
-                    data=f,
-                    file_name = "eda_report.html",
-                    mime="text/html"
+        with open(report_path, "rb") as f:
+            st.download_button(
+                label = "Download EDA Report", data=f,
+                file_name = "eda_report.html", mime="text/html"
                 )
 
-        #Columns Visualization
-        st.subheader("📊 Column Visualizations")
-        visualize_columns(st.session_state.df)
+    #Columns Visualization
+    st.subheader("📊 Column Visualizations")
+    visualize_columns(st.session_state.df)
