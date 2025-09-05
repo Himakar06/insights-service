@@ -3,7 +3,7 @@ import pandas as pd
 import time
 
 from file_handler import is_valid_csv
-from analysis.quick_insights import quick_insights
+from analysis.quick_insights import display_insights
 from analysis.auto_eda import generate_eda
 from visualization import visualize_columns
 from data_quality_score import calculate_score,display_quality_score
@@ -94,32 +94,41 @@ if st.session_state.df is not None:
         st.write("**Data Preview**")
         st.dataframe(st.session_state.df.head())
     
+    st.sidebar.title("🛠️ Analysis Tools")
+    nav_choice = st.sidebar.radio(
+        "Choose an analysis section:",
+        ["📊 Quick Insights", "🔎 Auto Generate EDA", "📈 Column Visualizations"]
+    )   
 
     #Quick insights
-    st.title("📊 Quick Insights")
-    quick_insights(st.session_state.df)
+    if nav_choice == "📊 Quick Insights":
+        st.header("📊 Quick Insights")
+        display_insights()
 
     #Auto EDA
-    st.subheader("🔎 Auto Generate EDA")    
-    st.write(  "This feature uses **ydata_profiling** to create a complete exploratory data analysis (EDA) report.")
+    elif nav_choice == "🔎 Auto Generate EDA":
+        st.header("🔎 Auto Generate EDA")   
+        st.write("This feature uses **ydata_profiling** to create a complete exploratory data analysis (EDA) report.")
 
-    if st.button("Generate Auto EDA"):
-        with st.spinner("Generating EDA Report... Please wait ⏳"):
-            report_path = "eda_report.html"
-            generate_eda(st.session_state.df, report_path)
+        if st.button("Generate Auto EDA"):
+            with st.spinner("Generating EDA Report... Please wait ⏳"):
+                report_path = "eda_report.html"
+                generate_eda(st.session_state.df, report_path)
 
-        st.toast("✅ Auto EDA Report Generated!")
+            st.toast("✅ Auto EDA Report Generated!")
 
-        with open(report_path, "r", encoding= "utf-8") as f:
-            html_content = f.read()
-            st.components.v1.html(html_content, height=800,  scrolling = True)
+            with open(report_path, "r", encoding="utf-8") as f:
+                st.session_state.eda_html = f.read()
 
-        with open(report_path, "rb") as f:
-            st.download_button(
-                label = "Download EDA Report", data=f,
-                file_name = "eda_report.html", mime="text/html"
+        if "eda_html" in st.session_state:
+            st.components.v1.html(st.session_state.eda_html, height=800, scrolling=True)
+            with open("eda_report.html", "rb") as f:
+                st.download_button(
+                    label="Download EDA Report", data=f,
+                    file_name="eda_report.html", mime="text/html"
                 )
 
     #Columns Visualization
-    st.subheader("📊 Column Visualizations")
-    visualize_columns(st.session_state.df)
+    elif nav_choice == "📈 Column Visualizations":
+        st.header("📈 Column Visualizations")
+        visualize_columns(st.session_state.df)

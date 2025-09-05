@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import streamlit as st
 
+
+@st.cache_data(ttl=3600, show_spinner="Calculating data quality score...")
 def calculate_score(df):
     total_score = 0
     max_score = 100
@@ -22,13 +24,13 @@ def calculate_score(df):
     #3.Data types consistency (20points)
     numeric_cols = df.select_dtypes(include=[np.number]).shape[1]
     categoric_cols = df.select_dtypes(include=['object', 'category']).shape[1]
-    dtypes_score = 20 * (1- (abs( numeric_cols - categoric_cols) / df.shape[1]))
+    dtypes_score = 20 * (1- (abs( numeric_cols - categoric_cols) / max(1, df.shape[1])))
     total_score += dtypes_score
     factors.append(f"Data Types: {dtypes_score:.1f}/20 ({numeric_cols} numeric, {categoric_cols} categorical)")
 
     #4.Column Names (10points)
     invalid_chars = sum(1 for col in df.columns if any(c in col for c in [' ', '-', '*', '/', '.']))
-    naming_score = 10 * (1 - (invalid_chars / len(df.columns)))
+    naming_score = 10 * (1 - (invalid_chars / max(1, len(df.columns))))
     total_score += naming_score
     factors.append(f"Column Names: {naming_score:.1f}/10 ({invalid_chars} columns with special chars)")
 
@@ -38,20 +40,28 @@ def calculate_score(df):
     factors.append(f"Data Volume: {volume_score:.1f}/15 ({df.shape[0]} rows × {df.shape[1]} columns)")
 
     #6.Outliers (15points)
-    if numeric_cols > 0:
+    numeric_cols_count = df.select_dtypes(include=[np.number]).shape[1]
+    if numeric_cols_count > 0:
         outlier_scores = []
-        for col in df.select_dtypes(include=[np.number]).columns:
-            Q1 = df[col].quantile(0.25)
-            Q3 = df[col].quantile(0.75)
-            IQR = Q3 - Q1
-            outliers = ((df[col] < (Q1 - 1.5 * IQR)) | (df[col] > (Q3 + 1.5 * IQR))).sum()
-            outlier_percentage = outliers / df.shape[0]
-            outlier_scores.append(1 - outlier_percentage)
+        numeric_df = df.select_dtypes(include=[np.number])
+        for col in numeric_df.columns:
+            if numeric_df[col].notna().sum() > 0:
+                Q1 = df[col].quantile(0.25)
+                Q3 = df[col].quantile(0.75)
+                IQR = Q3 - Q1
 
-        outlier_score = 15 * (sum(outlier_scores) / len(outlier_scores))
-        total_score += outlier_score
-        factors.append(f"Outliers: {outlier_score:.1f}/15 (numeric columns analysis)")
-
+                if IQR > 0:
+                    outliers = ((df[col] < (Q1 - 1.5 * IQR)) | (df[col] > (Q3 + 1.5 * IQR))).sum()
+                    outlier_percentage = outliers / df.shape[0]
+                    outlier_scores.append(1 - outlier_percentage)
+                else:
+                    outlier_scores.append(1.0)
+        if outlier_scores:
+            outlier_score = 15 * (sum(outlier_scores) / len(outlier_scores))
+            total_score += outlier_score
+            factors.append(f"Outliers: {outlier_score:.1f}/15 (numeric columns analysis)")
+        else:
+            factors.append("Outliers: N/A (no valid numeric columns for analysis)")
     else:
         factors.append("Outliers: N/A (no numeric columns)")
 
@@ -59,7 +69,7 @@ def calculate_score(df):
 
     return total_score, factors
 
-
+@st.cache_data(ttl=3600)
 def get_quality_emoji(score):
     if score >= 90:
         return "🎯 Excellent"
@@ -78,8 +88,7 @@ def display_quality_score(score, factors):
     
     with col2:
         st.markdown("### 📊 Data Quality Score")
-        
-        # Create a progress bar-like display
+    
         progress_color = "green" if score >= 75 else "orange" if score >= 50 else "red"
         st.markdown(f"""
         <div style="background: linear-gradient(90deg, {progress_color} {score}%, #f0f0f0 {score}%);
@@ -96,9 +105,19 @@ def display_quality_score(score, factors):
 
     if score < 75:
         st.warning("💡 **Recommendations:**")
-        if score < 60:
-            st.write("• Consider handling missing values")
+        if "Missing values" in factors[0] and float(factors[0].split(":")[1].split("/")[0].strip()) < 20:
+            st.write("• Consider handling missing values (imputation or removal)")
+        
+        if "Duplicates" in factors[1] and float(factors[1].split(":")[1].split("/")[0].strip()) < 12:
             st.write("• Remove duplicate rows")
-            st.write("• Check for data entry errors")
-        st.write("• Review column names for consistency")
-        st.write("• Validate data types")
+        
+        if "Data Types" in factors[2] and float(factors[2].split(":")[1].split("/")[0].strip()) < 15:
+            st.write("• Validate and convert data types appropriately")
+        
+        if "Column Names" in factors[3] and float(factors[3].split(":")[1].split("/")[0].strip()) < 8:
+            st.write("• Standardize column names (remove special characters)")
+        
+        if "Outliers" in factors[-1] and "N/A" not in factors[-1]:
+            outlier_score = float(factors[-1].split(":")[1].split("/")[0].strip())
+            if outlier_score < 12:
+                st.write("• Investigate and handle outliers in numeric columns")

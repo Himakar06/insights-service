@@ -1,9 +1,24 @@
 import pandas as pd
+import hashlib
+import streamlit as st
+
+def get_file_hash(file):
+    file.seek(0)
+    content = file.read()
+    file.seek(0)
+    return hashlib.md5(content).hexdigest()
+
+@st.cache_data(ttl=3600)
+def read_csv_file(file_path_or_object):
+    return pd.read_csv(file_path_or_object, encoding="utf-8", low_memory=False)
+
 
 def is_valid_csv(file) -> (bool, str, pd.DataFrame | None):
     try:
-    
-        df = pd.read_csv(file, encoding="utf-8", low_memory=False)
+        
+        file_hash = get_file_hash(file)
+
+        df = read_csv_file(file)
 
         if df.empty:
             return False, "CSV file is empty", None
