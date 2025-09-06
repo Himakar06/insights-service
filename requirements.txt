@@ -15,5 +15,7 @@ scipy==1.13.1
 
 # Utilities
 scikit-learn==1.5.1
-htmlmin==0.1.12
+htmlmin==0.1.13
 tqdm==4.66.5
+
+
