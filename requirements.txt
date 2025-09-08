@@ -1,18 +1,9 @@
-# Core
 streamlit==1.36.0
 pandas==2.2.2
 numpy==1.26.4
-
-# Visualization
-plotly==5.23.0
 matplotlib==3.9.1
-
-
-# Data Profiling / Auto EDA
-ydata-profiling
+seaborn==0.12.2
 statsmodels==0.14.2
-
-
-
-
-
+plotly==5.23.0
+ydata-profiling==4.8.3
+htmlmin==0.1.13
