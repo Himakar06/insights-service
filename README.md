@@ -50,9 +50,9 @@ Here’s what makes this project stand out:
 ## 📊 CSV Insights Dashboard  
 
 <p align="center">  
-  <img src="images/dashboard.png" alt="Dashboard Screenshot" width="600"/>  
-  <img src="images/preview.png" alt="Visualization Preview" width="600"/>  
-  <img src="images/pdf.png" alt="PDF Export Screenshot" width="600"/>  
+  <img src="images/Dashboard.png" alt="Dashboard" width="600"/>  
+  <img src="images/Auto EDA.png" alt="Auto Generate EDA" width="600"/>  
+  <img src="images/Column Visualizations.png" alt="Column Visualizations" width="600"/>  
 </p>  
 
 ---
@@ -67,13 +67,3 @@ Here’s what makes this project stand out:
 - **Future** → OpenAI/HuggingFace Transformers for LLM-powered chat  
 
 ---
-
-## 🚀 Getting Started  
-
-### 🔧 Installation  
-
-```bash
-git clone https://github.com/Himakar06/insights-service.git
-cd insights-service
-pip install -r requirements.txt
-streamlit run src/app.py
